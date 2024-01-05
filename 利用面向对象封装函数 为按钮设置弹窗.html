@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>面向对象封装消息提示</title>
+  <style>
+    .modal {
+      width: 300px;
+      min-height: 100px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+      position: fixed;
+      z-index: 1;
+      left: 50%;
+      top: 50%;
+      transform: translate3d(-50%, -50%, 0);
+      background-color: #fff;
+    }
+
+    .modal .header {
+      line-height: 40px;
+      padding: 0 10px;
+      position: relative;
+      font-size: 20px;
+    }
+
+    .modal .header i {
+      font-style: normal;
+      color: #999;
+      position: absolute;
+      right: 15px;
+      top: -2px;
+      cursor: pointer;
+    }
+
+    .modal .body {
+      text-align: center;
+      padding: 10px;
+    }
+
+    .modal .footer {
+      display: flex;
+      justify-content: flex-end;
+      padding: 10px;
+    }
+
+    .modal .footer a {
+      padding: 3px 8px;
+      background: #ccc;
+      text-decoration: none;
+      color: #fff;
+      border-radius: 2px;
+      margin-right: 10px;
+      font-size: 14px;
+    }
+
+    .modal .footer a.submit {
+      background-color: #369;
+    }
+  </style>
+</head>
+
+<body>
+  <button id="delete">删除</button>
+  <button id="login">登录</button>
+
+  <!-- <div class="modal">
+    <div class="header">温馨提示 <i>x</i></div>
+    <div class="body">您没有删除权限操作</div>
+  </div> -->
+  <script>
+    //1. 利用构造函数封装弹出框（利用盒子布局及css居中） （创建标签）
+    function windows(title = '', message = '') {
+      this.div = document.createElement('div')
+      this.div.className = 'modal'
+      this.div.innerHTML = `
+        <div class="header">${title} <i>x</i></div>
+        <div class="body">${message}</div>
+    `
+    }
+
+    // fn()是将方法直接渲染到了window上，里面的this指向window；
+    // new fn()是将方法渲染到了该函数的新对象上，里面的this指向被赋予对象的值上。
+
+    // 2.构造原型对象挂载open方法(将盒子添加进body中显示在document中)
+    windows.prototype.open = function () {
+      //防止出现多个弹窗
+      const box = document.querySelector('.modal')
+      box && box.remove()
+
+      //在body中添加div标签
+      document.body.appendChild(this.div)  //需要用this时不能用箭头函数
+
+
+      //因为div在open方法中添加进body   所以此时body中才有div标签   马上进行事件绑定
+      document.querySelector('.header i').addEventListener('click', () =>
+        this.close()   //这个地方用到箭头函数（不创建this  所以此时的this与上一级this指向相同 为实例对象）
+      )
+    }
+    // 3.构造原型对象挂载close方法（关闭盒子）
+    windows.prototype.close = function () {
+      this.div.remove()
+    }
+
+    //  4.设置事件绑定 （对按钮设置点击事件）
+    document.querySelector('#login').addEventListener('click', function () {
+      //  实例化创建标签
+      const login = new windows('温馨提示', '您没有注册')
+      login.open()
+
+    })
+    document.querySelector('#delete').addEventListener('click', function () {
+      const del = new windows('温馨提示', '您没有删除权限操作')
+      del.open()
+    })
+
+  </script>
+
+
+  <script>
+
+  </script>
+</body>
+
+</html>
